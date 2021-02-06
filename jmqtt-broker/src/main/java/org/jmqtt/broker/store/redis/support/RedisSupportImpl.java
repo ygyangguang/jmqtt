@@ -1,16 +1,17 @@
 
-package org.jmqtt.broker.store.redis;
+package org.jmqtt.broker.store.redis.support;
 
 import org.apache.commons.lang3.StringUtils;
 import org.jmqtt.broker.common.config.BrokerConfig;
 import org.jmqtt.broker.common.log.LoggerName;
+import org.jmqtt.broker.store.redis.RedisCallBack;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPool;
 import redis.clients.jedis.JedisPoolConfig;
 
-public class RedisTemplate {
+public class RedisSupportImpl implements RedisSupport{
 
     private static final Logger log = LoggerFactory.getLogger(LoggerName.STORE);
 
@@ -19,11 +20,11 @@ public class RedisTemplate {
 
     public static final String PROJECT = "JMQTT";
 
-    public RedisTemplate(BrokerConfig brokerConfig){
+    public RedisSupportImpl(BrokerConfig brokerConfig){
         this.brokerConfig = brokerConfig;
     }
 
-    public void init(){
+    void init(){
         try {
             JedisPoolConfig jedisPoolConfig = new JedisPoolConfig();
             jedisPoolConfig.setMinIdle(brokerConfig.getMinIdle());
@@ -40,7 +41,7 @@ public class RedisTemplate {
             log.error("[Redis handle error],ex:{}",ex);
         }
     }
-
+    @Override
     public <T> T operate(RedisCallBack redisCallBack){
         log.debug("[Cluster] redis operate begin");
         long startTime = System.currentTimeMillis();
@@ -59,7 +60,7 @@ public class RedisTemplate {
         return null;
     }
 
-    public void close(){
+    void close(){
         log.info("[Cluster] redis close");
         if (jedisPool != null) {
             jedisPool.close();
